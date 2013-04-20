@@ -7,6 +7,12 @@ public class EntityProtect extends JavaPlugin {
     @Override
     public void onEnable(){
     	getLogger().info("EntityProtect version "+getDescription().getVersion()+" Starting up!");
+    	try {
+    		
+    	} catch (Exception e) {
+    		getLogger().severe("Plugin could not started:");
+    		e.printStackTrace();
+    	}
     }
  
     @Override
