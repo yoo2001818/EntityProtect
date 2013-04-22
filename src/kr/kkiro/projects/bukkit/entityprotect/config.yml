@@ -1,0 +1,31 @@
+##
+## EntityProtect Config File
+##
+
+config-version: 0
+
+generic:
+  # 
+
+minecart:
+  # Should minecart should be protected?
+  # If it set to deny, that can't be created.
+  # with 'entityprotect.bypass.spawn', it can bypassed.
+  protect-enabled:
+    passenger: public
+    chest: private
+    hopper: private
+    tnt: deny
+    furance: false
+  # If minecart doesn't interact with anything after specific time,
+  # Minecart will be automatically destoryed.
+  # (in minutes)
+  auto-destory: 1440
+  # Same config, Minecart will be automatically unprotected.
+  auto-unprotect: 720
+  protect:
+    passenger:
+      riding: true
+      mob-riding: true
+      
+   
