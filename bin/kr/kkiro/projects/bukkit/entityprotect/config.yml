@@ -10,7 +10,10 @@ general:
   maxentity: 60
 
 protect:
-  damage: true
+  # This totally disables damage
+  damage: false
+  # This sets damage to 0.5 heart
+  damage1hp: false
   breed: true
   kidnap: true
   lava: false
@@ -42,7 +45,7 @@ environment:
     owner: true
 
 translation:
-  mobs:
+  mob:
     Chicken: 'Chicken'
     Cow: 'Cow'
     MushroomCow: 'Mooshroom'
@@ -53,6 +56,7 @@ translation:
   info: '&bYou can now breed &a$2 &bmore animals.'
   owner: '&bThis &c$1&b\'s owner is &c$2&b.'
   owneryou: '&bThis &c$1%b\'s owner is &cYou&b.'
+  sorry: '&cSorry, You cannot do that.'
   breed: '&aYou breeded &c$1&a, You can now breed &b$2 &amore animals.'
   setowner: '&c$1&as that you breeded were natural animals. \nSo they now belong to you, so you can breed &b$2 &amore animals.'
   kill: '&c$1&a killed your &c$1%a. You can now breed &b$2 &amore animals.'

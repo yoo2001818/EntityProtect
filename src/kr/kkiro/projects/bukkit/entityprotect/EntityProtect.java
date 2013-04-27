@@ -8,6 +8,7 @@ public class EntityProtect extends JavaPlugin {
 	
 	private EPConfig config;
 	private EPDatabase db;
+	private EPCache cache;
 	
     @Override
     public void onEnable(){
@@ -15,6 +16,7 @@ public class EntityProtect extends JavaPlugin {
     	try {
     		config = new EPConfig(this);
     		db = new EPDatabase(this);
+    		cache = new EPCache(this);
     	} catch (Exception e) {
     		if(e.getMessage() == "ConfigRequired") {
     			this.setEnabled(false);
@@ -48,4 +50,7 @@ public class EntityProtect extends JavaPlugin {
     	return config;
     }
     
+    public EPCache getCache() {
+    	return cache;
+    }
 }
