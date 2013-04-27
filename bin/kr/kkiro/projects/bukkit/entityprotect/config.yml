@@ -4,28 +4,58 @@
 
 config-version: 0
 
-generic:
-  # 
+general:
+  enabled: true
+  bypass: false
+  maxentity: 60
 
-minecart:
-  # Should minecart should be protected?
-  # If it set to deny, that can't be created.
-  # with 'entityprotect.bypass.spawn', it can bypassed.
-  protect-enabled:
-    passenger: public
-    chest: private
-    hopper: private
-    tnt: deny
-    furance: false
-  # If minecart doesn't interact with anything after specific time,
-  # Minecart will be automatically destoryed.
-  # (in minutes)
-  auto-destory: 1440
-  # Same config, Minecart will be automatically unprotected.
-  auto-unprotect: 720
-  protect:
-    passenger:
-      riding: true
-      mob-riding: true
-      
-   
+protect:
+  damage: true
+  breed: true
+  kidnap: true
+  lava: false
+  drown: false
+  burn: false
+  fall: false
+
+mob:
+  Chicken: true
+  Cow: true
+  MushroomCow: true
+  Pig: true
+  Sheep: true
+  Wolf: true
+  Ozelot: true
+  
+environment:
+  # Set owner if you breed animal.
+  setowneratbreed: true
+  # Prevent animal extinction.
+  extinction:
+    # Respawn time
+    respawntime: 60
+    # Respawn when killed by Environment
+    kill: true
+    # Respawn when slayed by Player
+    slay: true
+    # spawn another when natural animal get owner.
+    owner: true
+
+translation:
+  mobs:
+    Chicken: 'Chicken'
+    Cow: 'Cow'
+    MushroomCow: 'Mooshroom'
+    Pig: 'Pig'
+    Sheep: 'Sheep'
+    Wolf: 'Wolf'
+    Ozelot: 'Cat'
+  info: '&bYou can now breed &a$2 &bmore animals.'
+  owner: '&bThis &c$1&b\'s owner is &c$2&b.'
+  owneryou: '&bThis &c$1%b\'s owner is &cYou&b.'
+  breed: '&aYou breeded &c$1&a, You can now breed &b$2 &amore animals.'
+  setowner: '&c$1&as that you breeded were natural animals. \nSo they now belong to you, so you can breed &b$2 &amore animals.'
+  kill: '&c$1&a killed your &c$1%a. You can now breed &b$2 &amore animals.'
+  killyou: '&cYou&a killed your &c$1%a. You can now breed &b$2 &amore animals.'
+  permission: '&cYou don't have permission : \'&f$1&c\'.'
+  
