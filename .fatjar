@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sun Apr 28 10:07:05 KST 2013
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=EntityProtect.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<jar|bukkit-1.5.1-R0.2.jar>
+includes=

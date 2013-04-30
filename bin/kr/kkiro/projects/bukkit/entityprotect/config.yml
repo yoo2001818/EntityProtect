@@ -13,15 +13,14 @@ protect:
   # This totally disables damage
   damage: false
   # This sets damage to 0.5 heart
-  damage1hp: false
+  damage1hp: true
+  # This prevents die
+  slay: false
   breed: true
-  kidnap: true
-  lava: false
-  drown: false
-  burn: false
-  fall: false
+  environment: false
+  shear: true
 
-mob:
+enabled-mobs:
   Chicken: true
   Cow: true
   MushroomCow: true
@@ -35,31 +34,35 @@ environment:
   setowneratbreed: true
   # Prevent animal extinction.
   extinction:
-    # Respawn time
-    respawntime: 60
-    # Respawn when killed by Environment
+    # Respawn time, in ticks (20tick = 1second)
+    respawntime: 600
+    # Respawn when die
     kill: true
-    # Respawn when slayed by Player
-    slay: true
     # spawn another when natural animal get owner.
     owner: true
 
 translation:
-  mob:
-    Chicken: 'Chicken'
-    Cow: 'Cow'
-    MushroomCow: 'Mooshroom'
-    Pig: 'Pig'
-    Sheep: 'Sheep'
-    Wolf: 'Wolf'
-    Ozelot: 'Cat'
-  info: '&bYou can now breed &a$2 &bmore animals.'
-  owner: '&bThis &c$1&b\'s owner is &c$2&b.'
-  owneryou: '&bThis &c$1%b\'s owner is &cYou&b.'
-  sorry: '&cSorry, You cannot do that.'
-  breed: '&aYou breeded &c$1&a, You can now breed &b$2 &amore animals.'
-  setowner: '&c$1&as that you breeded were natural animals. \nSo they now belong to you, so you can breed &b$2 &amore animals.'
-  kill: '&c$1&a killed your &c$1%a. You can now breed &b$2 &amore animals.'
-  killyou: '&cYou&a killed your &c$1%a. You can now breed &b$2 &amore animals.'
-  permission: '&cYou don't have permission : \'&f$1&c\'.'
+  mobs:
+    Chicken: "Chicken"
+    Cow: "Cow"
+    MushroomCow: "Mooshroom"
+    Pig: "Pig"
+    Sheep: "Sheep"
+    Wolf: "Wolf"
+    Ozelot: "Cat"
+  bypass: "&eNotice your count is bigger than limit but bypassing."
+  info: "&bYou can now breed &a$2 &bmore animals."
+  owner: "&bThis &c$1&b's owner is &c$2&b."
+  owneryou: "&bThis &c$1&b's owner is &cYou&b."
+  sorry: "&cSorry, You can't do that."
+  breedsorry: "&cSorry, You can't breed. Kill your own animals to breed again."
+  breed: "&aYou breeded &c$1&a, You can now breed &b$2 &amore animals."
+  setowner: "&a$1 &c$2&as that you breeded were natural animals. \nSo they now belong to you, so you can breed &b$3 &amore animals."
+  kill: "&c$1&a killed your &c$1&a. You can now breed &b$2 &amore animals."
+  killyou: "&cYou&a killed your &c$1%a. You can now breed &b$2 &amore animals."
+  give: "&aRight click your animal to give animals.\n&aType &f/ep finish&a to finish."
+  finish: "&aAction Finished!"
+  givedone: "&aTransaction successfully finished!"
+  givecancel: "&aTransaction failed!"
+  giveother: "&c$1&a wants give you\n&c$2\n&aDo you accept this? type &f/ep yes&a or &f/ep no&a."
   

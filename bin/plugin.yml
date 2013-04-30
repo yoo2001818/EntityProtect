@@ -1,3 +1,63 @@
 name: EntityProtect
-main: kr.kkiro.projects.bukkit.entityprotect
-version: 0.0.1
+main: kr.kkiro.projects.bukkit.entityprotect.EntityProtect
+version: 0.1.0
+commands:
+  entityprotect:
+    description: EntityProtect main command
+    usage: /<command>
+    permission: entityprotect.help
+    aliases: ep
+permissions:
+  entityprotect.*:
+    description: All
+    default: op
+    children:
+       entityprotect.get: true
+       entityprotect.set: true
+       entityprotect.killall: true
+       entityprotect.setowner: true
+       entityprotect.delowner: true
+       entityprotect.finish: true
+       entityprotect.bypass: true
+       entityprotect.bypass.*: true
+  entityprotect.bypass.*:
+    description: bypass all
+    default: op
+    children:
+       entityprotect.bypass.damage: true
+       entityprotect.bypass.damage1hp: true
+       entityprotect.bypass.slay: true
+       entityprotect.bypass.shear: true
+  entityprotect.get:
+    description: Get player
+    default: op
+  entityprotect.set:
+    description: Set player
+    default: op
+  entityprotect.killall:
+    description: Killall player
+    default: op
+  entityprotect.setowner:
+    description: set owner
+    default: op
+  entityprotect.delowner:
+    description: delete owner
+    default: op
+  entityprotect.finish:
+    description: finish
+    default: op
+  entityprotect.bypass:
+    description: bypass
+    default: op
+  entityprotect.bypass.damage:
+    description: bypass
+    default: op
+  entityprotect.bypass.damage1hp:
+    description: bypass
+    default: op
+  entityprotect.bypass.slay:
+    description: bypass
+    default: op
+  entityprotect.bypass.shear:
+    description: bypass
+    default: op

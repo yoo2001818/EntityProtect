@@ -5,30 +5,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
 
 public class FileInteract {
-	public static boolean copy(File source, File target) {
-		FileInputStream sourceStream;
+	public static boolean copy(InputStream source, File target) {
+		InputStream sourceStream;
 		FileOutputStream targetStream;
-		
-		FileChannel sourceChannel;
-		FileChannel targetChannel;
 		
 		try {
 			
-			sourceStream = new FileInputStream(source);
+			sourceStream = source;
 			targetStream = new FileOutputStream(target);
 			
-			sourceChannel = sourceStream.getChannel();
-			targetChannel = targetStream.getChannel();
+			byte[] buffer = new byte[1024];
+			int len = sourceStream.read(buffer);
+			while (len != -1) {
+			    targetStream.write(buffer, 0, len);
+			    len = sourceStream.read(buffer);
+			}
 			
-			sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
-			
-			sourceChannel.close();
-			targetChannel.close();
-			
-			sourceStream.close();
 			targetStream.close();
 			
 		} catch (FileNotFoundException e) {
@@ -40,5 +35,16 @@ public class FileInteract {
 		}
 		
 		return true;
+	}
+	public static boolean copy(File source, File target) {
+		try {
+			InputStream stream = new FileInputStream(source);
+			boolean result = copy(stream, target);
+			stream.close();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
