@@ -51,7 +51,7 @@ translation:
     Wolf: "Wolf"
     Ozelot: "Cat"
   bypass: "&eNotice your count is bigger than limit but bypassing."
-  info: "&bYou can now breed &a$2 &bmore animals."
+  info: "&bYou can now breed &a$1 &bmore animals."
   owner: "&bThis &c$1&b's owner is &c$2&b."
   owneryou: "&bThis &c$1&b's owner is &cYou&b."
   sorry: "&cSorry, You can't do that."

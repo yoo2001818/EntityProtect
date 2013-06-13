@@ -12,12 +12,10 @@ import lib.PatPeter.SQLibrary.SQLite;
 
 public class EPDatabase {
 	private Database sql;
-	private EntityProtect plugin;
 
 	public EPDatabase(EntityProtect plugin) throws Exception {
 		if (plugin == null)
 			throw new Exception("Plugin can't be null");
-		this.plugin = plugin;
 		sql = new SQLite(Logger.getLogger("Minecraft"), "["
 				+ plugin.getDescription().getName() + "] ", plugin
 				.getDataFolder().getAbsolutePath(), plugin.getDescription()

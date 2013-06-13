@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
@@ -50,13 +51,9 @@ public class EPListener implements Listener {
 
 	@EventHandler
 	public void onEntityAttack(EntityDamageByEntityEvent event) {
-		if (event.getEntity().getType().equals(EntityType.CHICKEN)
-				|| event.getEntity().getType().equals(EntityType.PIG)
-				|| event.getEntity().getType().equals(EntityType.COW)
-				|| event.getEntity().getType().equals(EntityType.SHEEP)
-				|| event.getEntity().getType().equals(EntityType.MUSHROOM_COW)
-				|| event.getEntity().getType().equals(EntityType.OCELOT)
-				|| event.getEntity().getType().equals(EntityType.WOLF)) {
+		if (plugin.getCfg().readBoolean(
+				"enabled-mobs." + event.getEntity().getType().getName(), false) == false)
+		return;
 			if (plugin.getDB().getPlayer(event.getEntity().getUniqueId()) == null)
 				return;
 			if (event.getDamager().getType().equals(EntityType.PLAYER)) {
@@ -79,7 +76,6 @@ public class EPListener implements Listener {
 								plugin,
 								player,
 								plugin.getCfg().readString("translation.owner"),
-								owner,
 								plugin.getCfg().readString(
 										"translation.mobs."
 												+ entity.getType().getName(),
@@ -101,25 +97,38 @@ public class EPListener implements Listener {
 					event.setDamage(1);
 				}
 				if (!hasPermission("slay", player)
-						&& event.getDamage() > entity.getHealth()) {
+						&& event.getDamage() >= entity.getHealth()) {
 					entity.setHealth(2);
 					event.setDamage(1);
 					return;
 				}
+				/*if (plugin.getCfg().readBoolean("environment.extinction.kill") && event.getDamage() >= ((Creature)(event.getEntity())).getHealth()) {
+					respawnAnimal(event.getEntity().getType(), event.getEntity().getLocation(),
+					event.getEntity().getWorld());
+				}*/
 			} else {
-				if (!plugin.getCfg().readBoolean("protect.environment")) {
+				/*if (plugin.getCfg().readBoolean("environment.extinction.kill") && event.getDamage() >= ((Creature)(event.getEntity())).getHealth()) {
+					if(!event.getCause().equals(EntityDamageEvent.DamageCause.CUSTOM))
+					respawnAnimal(event.getEntity().getType(), event.getEntity().getLocation(),
+					event.getEntity().getWorld());
+				}*/
+				if (!plugin.getCfg().readBoolean("protect.environment") && !event.getCause().equals(EntityDamageEvent.DamageCause.CUSTOM)) {
 					event.setDamage(0);
 					event.setCancelled(true);
 				}
 			}
-		}
 	}
 
 	@EventHandler
 	public void onMobDeath(EntityDeathEvent event) {
-		// Check this is ageable entity. otherwise, skip.
-		if (event.getEntity() instanceof Ageable) {
-			Ageable entity = (Ageable) (event.getEntity());
+		if (!(event.getEntity() instanceof Creature)) return;
+		Creature entity = (Creature) (event.getEntity());
+		if (entity == null)
+			return;
+
+		if (plugin.getCfg().readBoolean(
+				"enabled-mobs." + entity.getType().getName(), false) == false)
+		return;
 			// Check it has owner.
 			String owner = plugin.getDB().getPlayer(entity.getUniqueId());
 			plugin.getDB().setCount(owner, plugin.getDB().getCount(owner) - 1);
@@ -128,7 +137,41 @@ public class EPListener implements Listener {
 				// Check its killer.
 
 				Player killer = entity.getKiller();
-
+				if(killer == null) {
+					if (plugin.getServer().getPlayer(owner) != null) {
+						Player player = plugin.getServer().getPlayer(owner);
+						EPChat.speak(
+								plugin,
+								player,
+								plugin.getCfg().readString("translation.kill"),
+								"Environment",
+								plugin.getCfg().readString(
+										"translation.mobs."
+												+ entity.getType().getName(),
+										entity.getType().getName()), Integer
+										.toString(plugin.getCfg().readInt(
+												"general.maxentity")
+												- plugin.getDB()
+														.getCount(owner)));
+					}
+					plugin.getLogger().info(
+							"Environment"
+									+ " killed "
+									+ owner
+									+ "'s"
+									+ plugin.getCfg().readString(
+											"translation.mobs."
+													+ entity.getType()
+															.getName(),
+											entity.getType().getName())
+									+ ", he can breed"
+									+ Integer.toString(plugin.getCfg().readInt(
+											"general.maxentity")
+											- plugin.getDB().getCount(owner))
+									+ " more animals.");
+					event.setDroppedExp(0);
+					event.getDrops().clear();
+				}
 				if (killer.getName().equals(owner)) {
 					EPChat.speak(
 							plugin,
@@ -190,13 +233,11 @@ public class EPListener implements Listener {
 					event.getDrops().clear();
 				}
 			} else {
-				// Must be natural mob; check respawn config.
 				if (plugin.getCfg().readBoolean("environment.extinction.kill")) {
-					respawnAnimal(entity.getType(), entity.getLocation(),
-							entity.getWorld());
+					respawnAnimal(event.getEntity().getType(), event.getEntity().getLocation(),
+					event.getEntity().getWorld());
 				}
 			}
-		}
 	}
 
 	@EventHandler
@@ -242,7 +283,6 @@ public class EPListener implements Listener {
 						plugin,
 						player,
 						plugin.getCfg().readString("translation.owner"),
-						owner,
 						plugin.getCfg().readString(
 								"translation.mobs."
 										+ entity.getType().getName(),
@@ -275,7 +315,7 @@ public class EPListener implements Listener {
 		}
 		if (entity instanceof Sheep
 				&& player.getItemInHand().getType().equals(Material.SHEARS)
-				&& ((owner == null || owner.equals(player.getName())) || hasPermission(
+				&& !((owner == null || owner.equals(player.getName())) || hasPermission(
 						"shear", player))) {
 			EPChat.speak(plugin, player,
 					plugin.getCfg().readString("translation.sorry"));
@@ -288,12 +328,12 @@ public class EPListener implements Listener {
 					&& BreedCheck.check(entity.getType(), player
 							.getItemInHand().getType())) {
 				if (canBreed(player)
-						&& (player.getName().equals(owner) || hasPermission(
+						&& (owner == null || player.getName().equals(owner) || hasPermission(
 								"breed", player))) {
 					plugin.getCache().breedCacheAdd(player.getName(),
 							(Creature) entity);
 				} else {
-					if (!(player.getName().equals(owner) || hasPermission(
+					if (!(owner == null || player.getName().equals(owner) || hasPermission(
 							"breed", player))) {
 						EPChat.speak(plugin, player, plugin.getCfg()
 								.readString("translation.sorry"));
@@ -458,8 +498,8 @@ public class EPListener implements Listener {
 				ArrayList<Location> loc1st = new ArrayList<Location>();
 				ArrayList<Location> loc2st = new ArrayList<Location>();
 				ArrayList<Location> loc3st = new ArrayList<Location>();
-				for (int x = -5; x <= 10; ++x) {
-					for (int z = -5; z <= 10; ++z) {
+				for (int x = -10; x <= 20; ++x) {
+					for (int z = -10; z <= 20; ++z) {
 						Location loc = location.clone();
 						loc.add(x, 0, z);
 						loc.setY(world.getHighestBlockYAt(loc) - 1);
@@ -480,16 +520,17 @@ public class EPListener implements Listener {
 				if (loc1st.size() > 0) {
 					Location loc = loc1st.get((int) (Math.random() * loc1st
 							.size()));
-					world.spawnEntity(loc.add(0, 1, 0), type);
-				} else if (loc2st.size() > 0) {
+					world.spawnEntity(loc.add(0, 2, 0), type);
+				}
+				/*else if (loc2st.size() > 0) {
 					Location loc = loc2st.get((int) (Math.random() * loc2st
 							.size()));
-					world.spawnEntity(loc.add(0, 1, 0), type);
+					world.spawnEntity(loc.add(0, 2, 0), type);
 				} else if (loc3st.size() > 0) {
 					Location loc = loc3st.get((int) (Math.random() * loc3st
 							.size()));
-					world.spawnEntity(loc.add(0, 1, 0), type);
-				}
+					world.spawnEntity(loc.add(0, 2, 0), type);
+				}*/
 			}
 		}
 		respawner run = new respawner();

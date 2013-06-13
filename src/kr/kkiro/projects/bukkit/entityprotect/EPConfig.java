@@ -16,11 +16,10 @@ public class EPConfig {
 	private YamlConfiguration config;
 	private YamlConfiguration defaultConfig;
 	private Logger logger;
-	private static InputStream defaultYaml;
+	private InputStream defaultYaml;
 
 	public EPConfig(EntityProtect plugin) throws Exception {
-		if (defaultYaml == null)
-			defaultYaml = getClass().getResourceAsStream("config.yml");
+		defaultYaml = this.getClass().getResourceAsStream("/kr/kkiro/projects/bukkit/entityprotect/config.yml");
 		if (plugin == null)
 			throw new Exception("Plugin can't be null");
 		logger = plugin.getLogger();
@@ -51,7 +50,7 @@ public class EPConfig {
 		try {
 			defaultYaml.close();
 			defaultYaml = null;
-			config.save(yaml);
+			//config.save(yaml);
 		} catch (Exception e) {
 		}
 	}
