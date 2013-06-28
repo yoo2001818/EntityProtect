@@ -15,7 +15,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
@@ -47,21 +46,41 @@ public class PlayerInteractListener implements Listener {
 				return;
 			}
 		}
-		//TODO: Shearing Sheep
 		if (entity.getType().equals(EntityType.SHEEP) && material.equals(Material.SHEARS)) {
-			
+			if (PermissionUtils.canBypass(EntityActivity.SHEAR_SHEEP, player, entityset != null)) {
+				return;
+			} else {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				return;
+			}
 		}
-		//TODO: Shearing MushroomCow
 		if (entity.getType().equals(EntityType.MUSHROOM_COW) && material.equals(Material.SHEARS)) {
-			
+			if (PermissionUtils.canBypass(EntityActivity.SHEAR_MUSHROOM_COW, player, entityset != null)) {
+				return;
+			} else {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				return;
+			}
 		}
-		//TODO: Filling Bucket (Cow)
 		if (entity.getType().equals(EntityType.COW) && material.equals(Material.BUCKET)) {
-			
+			if (PermissionUtils.canBypass(EntityActivity.FILL_COW, player, entityset != null)) {
+				return;
+			} else {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				return;
+			}
 		}
-		//TODO: Filling Bowl (MushroomCow)
 		if (entity.getType().equals(EntityType.MUSHROOM_COW) && material.equals(Material.BOWL)) {
-			
+			if (PermissionUtils.canBypass(EntityActivity.FILL_MUSHROOM_COW, player, entityset != null)) {
+				return;
+			} else {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				return;
+			}
 		}
 	}
 

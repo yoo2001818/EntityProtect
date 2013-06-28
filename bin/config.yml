@@ -6,9 +6,9 @@ general:
   max-entities-per-player: 60
   #This plugin uses Bukkit's database, If you want to set database, edit bukkit.yml
 
-# true = applied if only have owners
-# false = not applied
-# nonowner = applied anytime
+# true = enabled if only have owners
+# false = not enabled
+# nonowner = enabled except owner, But unregistered entities are also enabled
 protect-entities:
   damaging: false
   damage-force-1hp: true
@@ -16,7 +16,7 @@ protect-entities:
   shearing-sheep: true
   shearing-mushroomcow: nonowner
   filling-cow: true
-  filling-mushroomow: true
+  filling-mushroomcow: true
   pushing: false
   environment-damaging: true
   monster-damaging: true
