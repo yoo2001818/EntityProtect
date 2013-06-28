@@ -1,10 +1,12 @@
 package kr.kkiro.projects.bukkit.EntityProtect.events;
 
+import kr.kkiro.projects.bukkit.EntityProtect.utils.BreedChecker;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.ChatUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +20,7 @@ public class PlayerInteractListener implements Listener {
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
 		Player player = e.getPlayer();
 		Entity entity = e.getRightClicked();
+		Material material = player.getItemInHand().getType();
 		if (entity == null)
 			return;
 		if (!EntityUtils.isEnabled(entity.getType()))
@@ -28,6 +31,9 @@ public class PlayerInteractListener implements Listener {
 			ChatUtils.sendLang(player, "owner-info", 
 					"#mobs."+entity.getType().getName(),
 					(owner == player.getName()) ? "#you" : owner);
+		}
+		if (BreedChecker.check(entity.getType(), material)) {
+			PermissionUtils.
 		}
 	}
 
