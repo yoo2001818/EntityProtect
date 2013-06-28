@@ -2,7 +2,9 @@ package kr.kkiro.projects.bukkit.EntityProtect.events;
 
 import kr.kkiro.projects.bukkit.EntityProtect.utils.BreedChecker;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.ChatUtils;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityActivity;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityUtils;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.PermissionUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 
@@ -17,9 +19,9 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class PlayerInteractListener implements Listener {
 	@EventHandler
-	public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
-		Player player = e.getPlayer();
-		Entity entity = e.getRightClicked();
+	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+		Player player = event.getPlayer();
+		Entity entity = event.getRightClicked();
 		Material material = player.getItemInHand().getType();
 		if (entity == null)
 			return;
@@ -33,17 +35,23 @@ public class PlayerInteractListener implements Listener {
 					(owner == player.getName()) ? "#you" : owner);
 		}
 		if (BreedChecker.check(entity.getType(), material)) {
-			PermissionUtils.
+			if (PermissionUtils.canBypass(EntityActivity.BREED, player, entityset != null)) {
+				return;
+			} else {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				return;
+			}
 		}
 	}
 
 	@EventHandler
-	public void onPlayerEggThrow(PlayerEggThrowEvent e) {
+	public void onPlayerEggThrow(PlayerEggThrowEvent event) {
 
 	}
 
 	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 
 	}
 }

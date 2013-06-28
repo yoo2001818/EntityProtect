@@ -9,17 +9,17 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class DispenserListener implements Listener {
 
 	@EventHandler
-	public void onBlockDispense(BlockDispenseEvent e) {
+	public void onBlockDispense(BlockDispenseEvent event) {
 		// TODO: add to cache
 	}
 
 	@EventHandler
-	public void onInventoryClickEvent(InventoryClickEvent e) {
+	public void onInventoryClickEvent(InventoryClickEvent event) {
 		// TODO: set owner
 	}
 
 	@EventHandler
-	public void onItemSpawnEvent(ItemSpawnEvent e) {
+	public void onItemSpawnEvent(ItemSpawnEvent event) {
 		// TODO: set owner
 	}
 }

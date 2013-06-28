@@ -8,17 +8,17 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class EntityListener implements Listener {
 	@EventHandler
-	public void onCreatureSpawn(CreatureSpawnEvent e) {
+	public void onCreatureSpawn(CreatureSpawnEvent event) {
 
 	}
 
 	@EventHandler
-	public void onEntityDeath(EntityDeathEvent e) {
+	public void onEntityDeath(EntityDeathEvent event) {
 
 	}
 
 	@EventHandler
-	public void onEntityDamage(EntityDamageEvent e) {
+	public void onEntityDamage(EntityDamageEvent event) {
 
 	}
 }
