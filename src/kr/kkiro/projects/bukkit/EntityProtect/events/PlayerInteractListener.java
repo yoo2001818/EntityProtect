@@ -5,11 +5,13 @@ import kr.kkiro.projects.bukkit.EntityProtect.utils.ChatUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityActivity;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.PermissionUtils;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.cache.BreedCache;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +38,8 @@ public class PlayerInteractListener implements Listener {
 		}
 		if (BreedChecker.check(entity.getType(), material)) {
 			if (PermissionUtils.canBypass(EntityActivity.BREED, player, entityset != null)) {
+				BreedCache.getInstance().refresh();
+				BreedCache.getInstance().add(player.getName(), entity);
 				return;
 			} else {
 				ChatUtils.sendLang(player, "access-denied");
@@ -43,15 +47,28 @@ public class PlayerInteractListener implements Listener {
 				return;
 			}
 		}
+		//TODO: Shearing Sheep
+		if (entity.getType().equals(EntityType.SHEEP) && material.equals(Material.SHEARS)) {
+			
+		}
+		//TODO: Shearing MushroomCow
+		if (entity.getType().equals(EntityType.MUSHROOM_COW) && material.equals(Material.SHEARS)) {
+			
+		}
+		//TODO: Filling Bucket (Cow)
+		if (entity.getType().equals(EntityType.COW) && material.equals(Material.BUCKET)) {
+			
+		}
+		//TODO: Filling Bowl (MushroomCow)
+		if (entity.getType().equals(EntityType.MUSHROOM_COW) && material.equals(Material.BOWL)) {
+			
+		}
 	}
 
 	@EventHandler
 	public void onPlayerEggThrow(PlayerEggThrowEvent event) {
-
+		//TODO: Add cache
 	}
-
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-
-	}
+	
+	//TODO: Support monster eggs
 }
