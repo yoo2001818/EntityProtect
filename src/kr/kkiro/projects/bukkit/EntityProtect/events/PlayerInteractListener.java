@@ -1,5 +1,6 @@
 package kr.kkiro.projects.bukkit.EntityProtect.events;
 
+import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.BreedChecker;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.ChatUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityActivity;
@@ -29,25 +30,28 @@ public class PlayerInteractListener implements Listener {
 		Player player = event.getPlayer();
 		Entity entity = event.getRightClicked();
 		Material material = player.getItemInHand().getType();
+		EntityProtect.info("Invoked Event");
 		if (entity == null)
 			return;
+		EntityProtect.info("Debug:"+entity.getType());
 		if (!EntityUtils.isEnabled(entity.getType()))
 			return;
 		EntitySet entityset = DatabaseUtils.searchEntity(entity.getUniqueId());
 		if (entityset != null) {
-			String owner = entityset.getOwner().getPlayer();
+			String owner = entityset.getOwnerItem().getPlayer();
 			ChatUtils.sendLang(player, "owner-info", 
 					"#mobs."+entity.getType().getName(),
 					(owner == player.getName()) ? "#you" : owner);
 		}
+		EntityProtect.info("Passed 1");
 		if (entity instanceof Ageable) {
 			if (((Ageable) entity).canBreed() && BreedChecker.check(entity.getType(), material)) {
 				if (PermissionUtils.canBreed(player, entityset != null)) {
 					BreedCache.getInstance().refresh();
 					BreedCache.getInstance().add(player.getName(), entity);
+					EntityProtect.info("Added breed");
 					return;
 				} else {
-					ChatUtils.sendLang(player, "access-denied");
 					event.setCancelled(true);
 					EntityUtils.playEffect(player, entity);
 					return;
@@ -65,7 +69,6 @@ public class PlayerInteractListener implements Listener {
 					BreedCache.getInstance().add(player.getName(), entity);
 					return;
 				} else {
-					ChatUtils.sendLang(player, "access-denied");
 					event.setCancelled(true);
 					EntityUtils.playEffect(player, entity);
 					return;

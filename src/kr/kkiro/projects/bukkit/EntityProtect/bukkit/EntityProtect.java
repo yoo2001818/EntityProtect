@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.PersistenceException;
 
 import kr.kkiro.projects.bukkit.EntityProtect.commands.CommandManager;
-import kr.kkiro.projects.bukkit.EntityProtect.events.DispenserListener;
+import kr.kkiro.projects.bukkit.EntityProtect.events.EntityListener;
 import kr.kkiro.projects.bukkit.EntityProtect.events.PlayerInteractListener;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.cache.BreedCache;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.config.Config;
@@ -27,7 +27,7 @@ public class EntityProtect extends JavaPlugin {
 		CommandManager.init();
 		BreedCache.init();
 
-		getServer().getPluginManager().registerEvents(new DispenserListener(),
+		getServer().getPluginManager().registerEvents(new EntityListener(),
 				this);
 		getServer().getPluginManager().registerEvents(
 				new PlayerInteractListener(), this);

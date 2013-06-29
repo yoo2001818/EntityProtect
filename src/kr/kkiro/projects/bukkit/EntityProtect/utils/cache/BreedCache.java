@@ -29,18 +29,18 @@ public class BreedCache {
 	}
 
 	public void refresh() {
-		int size = cacheTime.size();
+		/*int size = cacheTime.size();
 		long expireTime = System.currentTimeMillis() - EXPIRE_TIME;
 		for (int i = 0; i < size; ++i) {
 			long time = cacheTime.get(i);
-			if (expireTime > time) {
+			if (expireTime < time) {
 				cacheTime.remove(i);
 				cachePlayer.remove(i);
 				cacheEntity.remove(i);
 				--i;
 				--size;
 			}
-		}
+		}*/
 	}
 
 	public void clear() {

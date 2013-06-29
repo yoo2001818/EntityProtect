@@ -1,5 +1,6 @@
 package kr.kkiro.projects.bukkit.EntityProtect.utils;
 
+import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.config.Config;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.PlayerSet;
@@ -17,7 +18,16 @@ public class PermissionUtils {
 	public static boolean canBypass(String activity, Boolean hasOwner) {
 		return !Config.getBoolean("protect-entities."+activity);
 	}
+	public static boolean canBypassLimit(Player player) {
+		if(!Config.getBoolean("general.allow-bypass")) return false;
+		if(player.hasPermission("entityprotect.bypass-limit")) return true;
+		return false;
+	}
 	public static boolean canBreed(Player player, Boolean hasOwner) {
+		if(!canBypass(EntityActivity.BREED, player, hasOwner)) {
+			ChatUtils.sendLang(player, "access-denied");
+			return false;
+		}
 		PlayerSet playerset = DatabaseUtils.searchPlayer(player.getName());
 		if (playerset == null) {
 			playerset = new PlayerSet();
@@ -28,11 +38,28 @@ public class PermissionUtils {
 		if(playerset.getBreedCount() < Config.getInt("general.max-entities-per-player")) {
 			return true;
 		} else {
-			if(canBypass(EntityActivity.BREED, player, hasOwner)) {
+			if(canBypassLimit(player)) {
 				return true;
 			} else {
+				ChatUtils.sendLang(player, "breed-fail");
+				ChatUtils.sendLang(EntityProtect.getInstance().getServer().getConsoleSender(), "console.breed-fail", player.getName()); 
 				return false;
 			}
+		}
+	}
+	public static boolean canBreed(String player) {
+		PlayerSet playerset = DatabaseUtils.searchPlayer(player);
+		if (playerset == null) {
+			playerset = new PlayerSet();
+			playerset.setPlayer(player);
+			playerset.setBreedCount(0);
+			DatabaseUtils.save(playerset);
+		}
+		if(playerset.getBreedCount() < Config.getInt("general.max-entities-per-player")) {
+			return true;
+		} else {
+			ChatUtils.sendLang(EntityProtect.getInstance().getServer().getConsoleSender(), "console.breed-fail", player); 
+			return false;
 		}
 	}
 }

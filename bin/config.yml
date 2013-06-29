@@ -45,10 +45,10 @@ protect-environment:
     respawn-maxrange: 40
     
     # Set regen percent.
-    # YOU MUST NOT SET `enviroment-died` to 1 UNLESS animal spawning is DISABLED
+    # YOU MUST NOT SET `enviroment-kill` to 1 UNLESS animal spawning is DISABLED
     # OR ANIMAL SPAWN TICK IS 0. IF NOT, ANIMALS WILL RULE THE WORLD
-    player-died: 1
-    enviroment-died: 0.5
+    player-kill: 1
+    enviroment-kill: 0.5
     owner-set: 1
 
 language:
@@ -95,7 +95,7 @@ language:
       denied: '&eTransfer cancelled.'
       noslot: '&eOther player doesn''t have slots left. He can breed {1} more animals.'
     killplayer:
-      help: '&cKills all of player's animal without drops.'
+      help: '&cKills all of player''s animal without drops.'
       usage: '<player>'
       finish: '&e{1} Animals were proccessed.'
     killall:
@@ -113,14 +113,19 @@ language:
       display-help: '&e{1} &f - &b{2}'
       display-usage: '&aUsage: &e{1} {2}'
       player-only: 'Only in-game players can use this command.'
-      permission: '&cYou don\'t have permission to do that!'
+      permission: '&cYou don''t have permission to do that!'
   console:
     breed-complete: '{1} breeded {2}, He can breed {3} more animals.'
-    breed-fail: '{1} tried to breed {2}, but he doesn\'t have any slots left.'
-    slay-animal: '{1} slayed {2}\'s {3}. {2} can breed {4} more animals.'
-    natural-kill: 'Environment killed {1}\'s {2}. He can breed {3} more animals.'
+    breed-fail: '{1} tried to breed, but he doesn''t have any slots left.'
+    breed-setowner: '{1} breeded {2} ownerless {3}s, He can breed {4} more animals.'
+    slay-animal: '{1} slayed {2}''s {3}. {2} can breed {4} more animals.'
   breed-more: '&bYou can breed {1} more animals.'
-  owner-info: '&cThis {1}\'s Owner is &e{2}.'
-  access-denied: '&cSorry, you can\'t do that.'
+  breed-complete: '&aYou breeded &c{1}&a, You can now breed &b{2} &amore animals.'
+  breed-setowner: '&a{1} &c{2}&as that you breeded were natural animals. \nSo they now belong to you, so you can breed &b{3} &amore animals.'
+  breed-fail: '&cSorry, You can''t breed anymore. Kill your own animals to breed again.'
+  slay-animal: '&e{1}&c slayed Your &a{2}&c. You can breed &b{3}&c more animals.'
+  owner-info: '&cThis {1}''s Owner is &e{2}.'
+  access-denied: '&cSorry, you can''t do that.'
   you: 'You'
+  environment: 'Environment'
       

@@ -1,6 +1,6 @@
 package kr.kkiro.projects.bukkit.EntityProtect.utils.database;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -8,16 +8,17 @@ import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Table;
-import javax.persistence.Version;
+
+import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.validation.NotEmpty;
 import com.avaje.ebean.validation.NotNull;
 
 @Entity()
@@ -31,24 +32,22 @@ public class EntitySet {
 	private UUID entity;
 
 	@NotNull
-	private PlayerSet owner;
+	private long owner;
 
-	@OneToMany
+	@JoinTable(
+		      name="ep_entities_players",
+		      joinColumns={@JoinColumn(name="entities_id", referencedColumnName="id")},
+		      inverseJoinColumns={@JoinColumn(name="players_id", referencedColumnName="id")})
 	private List<PlayerSet> members;
 
-	@Version
-	Timestamp regtime;
+	Date regtime;
 
-	@NotNull
 	private double lastX;
 
-	@NotNull
 	private double lastY;
 
-	@NotNull
 	private double lastZ;
 
-	@NotEmpty
 	private String lastWorld;
 
 	public void setId(long id) {
@@ -67,16 +66,24 @@ public class EntitySet {
 		return this.entity;
 	}
 
-	public void setOwner(PlayerSet owner) {
+	public void setOwner(long owner) {
 		this.owner = owner;
 	}
+	
+	public void setOwner(PlayerSet owner) {
+		this.owner = owner.getId();
+	}
 
-	public PlayerSet getOwner() {
+	public long getOwner() {
 		return this.owner;
+	}
+	
+	public PlayerSet getOwnerItem() {
+		return EntityProtect.getInstance().getDatabase().find(PlayerSet.class, this.owner);
 	}
 
 	public void setOwner(String owner) {
-		PlayerSet playerset = Ebean.find(PlayerSet.class).where()
+		PlayerSet playerset = EntityProtect.getInstance().getDatabase().find(PlayerSet.class).where()
 				.eq("player", owner).findUnique();
 		if (playerset == null) {
 			playerset = new PlayerSet();
@@ -84,7 +91,7 @@ public class EntitySet {
 			playerset.setBreedCount(0);
 			DatabaseUtils.save(playerset);
 		}
-		this.setOwner(playerset);
+		this.setOwner(playerset.getId());
 	}
 
 	public void setMembers(List<PlayerSet> members) {
@@ -129,14 +136,46 @@ public class EntitySet {
 		return players;
 	}
 
-	public void setRegtime(Timestamp regtime) {
+	public void setRegtime(Date regtime) {
 		this.regtime = regtime;
 	}
 
-	public Timestamp getRegtime() {
+	public Date getRegtime() {
 		return this.regtime;
 	}
 
+	public double getLastX() {
+		return this.lastX;
+	}
+	
+	public void setLastX(double lastX) {
+		this.lastX = lastX;
+	}
+	
+	public double getLastY() {
+		return this.lastY;
+	}
+	
+	public void setLastY(double lastY) {
+		this.lastY = lastY;
+	}
+	
+	public double getLastZ() {
+		return this.lastZ;
+	}
+	
+	public void setLastZ(double lastZ) {
+		this.lastZ = lastZ;
+	}
+	
+	public void setLastWorld(String world) {
+		this.lastWorld = world;
+	}
+
+	public String getLastWorld() {
+		return this.lastWorld;
+	}
+	
 	public void setLocation(Location location) {
 		this.lastX = location.getX();
 		this.lastY = location.getY();

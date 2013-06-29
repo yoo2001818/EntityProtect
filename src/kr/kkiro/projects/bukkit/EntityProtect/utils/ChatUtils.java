@@ -10,7 +10,7 @@ public class ChatUtils {
 		String out = message;
 		for (int i = 0; i < replaces.length; ++i) {
 			String replacement = replaces[i];
-			if(replacement.startsWith("#")) {
+			if(replacement.startsWith("#", 0)) {
 				replacement = Config.getString("language."+replacement.substring(1));
 			}
 			out = out.replace("{" + Integer.toString(i + 1) + "}", replaces[i]);
