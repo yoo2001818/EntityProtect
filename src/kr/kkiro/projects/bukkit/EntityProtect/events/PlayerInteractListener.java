@@ -10,9 +10,14 @@ import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEggThrowEvent;
@@ -35,15 +40,36 @@ public class PlayerInteractListener implements Listener {
 					"#mobs."+entity.getType().getName(),
 					(owner == player.getName()) ? "#you" : owner);
 		}
-		if (BreedChecker.check(entity.getType(), material)) {
-			if (PermissionUtils.canBypass(EntityActivity.BREED, player, entityset != null)) {
-				BreedCache.getInstance().refresh();
-				BreedCache.getInstance().add(player.getName(), entity);
-				return;
-			} else {
-				ChatUtils.sendLang(player, "access-denied");
-				event.setCancelled(true);
-				return;
+		if (entity instanceof Ageable) {
+			if (((Ageable) entity).canBreed() && BreedChecker.check(entity.getType(), material)) {
+				if (PermissionUtils.canBreed(player, entityset != null)) {
+					BreedCache.getInstance().refresh();
+					BreedCache.getInstance().add(player.getName(), entity);
+					return;
+				} else {
+					ChatUtils.sendLang(player, "access-denied");
+					event.setCancelled(true);
+					EntityUtils.playEffect(player, entity);
+					return;
+				}
+			}
+		}
+		if (entity instanceof Tameable) {
+			if (!((Tameable) entity).isTamed()
+					&& (entity instanceof Wolf && player.getItemInHand()
+					.getType().equals(Material.BONE))
+					|| (entity instanceof Ocelot && player.getItemInHand()
+					.getType().equals(Material.RAW_FISH))) {
+				if (PermissionUtils.canBreed(player, entityset != null)) {
+					BreedCache.getInstance().refresh();
+					BreedCache.getInstance().add(player.getName(), entity);
+					return;
+				} else {
+					ChatUtils.sendLang(player, "access-denied");
+					event.setCancelled(true);
+					EntityUtils.playEffect(player, entity);
+					return;
+				}
 			}
 		}
 		if (entity.getType().equals(EntityType.SHEEP) && material.equals(Material.SHEARS)) {
@@ -52,6 +78,7 @@ public class PlayerInteractListener implements Listener {
 			} else {
 				ChatUtils.sendLang(player, "access-denied");
 				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
 				return;
 			}
 		}
@@ -61,6 +88,7 @@ public class PlayerInteractListener implements Listener {
 			} else {
 				ChatUtils.sendLang(player, "access-denied");
 				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
 				return;
 			}
 		}
@@ -70,6 +98,7 @@ public class PlayerInteractListener implements Listener {
 			} else {
 				ChatUtils.sendLang(player, "access-denied");
 				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
 				return;
 			}
 		}
@@ -79,6 +108,7 @@ public class PlayerInteractListener implements Listener {
 			} else {
 				ChatUtils.sendLang(player, "access-denied");
 				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
 				return;
 			}
 		}
@@ -86,7 +116,18 @@ public class PlayerInteractListener implements Listener {
 
 	@EventHandler
 	public void onPlayerEggThrow(PlayerEggThrowEvent event) {
-		//TODO: Add cache
+		Player player = event.getPlayer();
+		Egg entity = event.getEgg();
+		if (PermissionUtils.canBreed(player, false)) {
+			BreedCache.getInstance().refresh();
+			BreedCache.getInstance().add(player.getName(), entity);
+			return;
+		} else {
+			ChatUtils.sendLang(player, "access-denied");
+			event.setHatching(false);
+			EntityUtils.playEffect(player, entity);
+			return;
+		}
 	}
 	
 	//TODO: Support monster eggs

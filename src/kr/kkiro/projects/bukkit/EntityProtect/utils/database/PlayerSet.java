@@ -6,6 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.avaje.ebean.validation.NotEmpty;
+import com.avaje.ebean.validation.NotNull;
 
 @Entity()
 @Table(name = "ep_players")
@@ -14,6 +15,9 @@ public class PlayerSet {
 	@GeneratedValue
 	private long id;
 
+	@NotNull
+	private int breedCount;
+	
 	@NotEmpty
 	private String player;
 
@@ -23,6 +27,14 @@ public class PlayerSet {
 
 	public long getId() {
 		return this.id;
+	}
+	
+	public void setBreedCount(int breedCount) {
+		this.breedCount = breedCount;
+	}
+
+	public int getBreedCount() {
+		return this.breedCount;
 	}
 
 	public void setPlayer(String player) {

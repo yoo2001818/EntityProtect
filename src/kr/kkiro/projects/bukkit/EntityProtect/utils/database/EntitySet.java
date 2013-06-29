@@ -81,6 +81,8 @@ public class EntitySet {
 		if (playerset == null) {
 			playerset = new PlayerSet();
 			playerset.setPlayer(owner);
+			playerset.setBreedCount(0);
+			DatabaseUtils.save(playerset);
 		}
 		this.setOwner(playerset);
 	}
@@ -106,6 +108,8 @@ public class EntitySet {
 			if (playerset == null) {
 				playerset = new PlayerSet();
 				playerset.setPlayer(members.get(i));
+				playerset.setBreedCount(0);
+				DatabaseUtils.save(playerset);
 			}
 			players.add(playerset);
 		}
