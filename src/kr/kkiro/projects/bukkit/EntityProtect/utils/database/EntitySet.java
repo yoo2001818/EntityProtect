@@ -1,15 +1,10 @@
 package kr.kkiro.projects.bukkit.EntityProtect.utils.database;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Table;
 
 import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
@@ -18,27 +13,25 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import com.avaje.ebean.Ebean;
 import com.avaje.ebean.validation.NotNull;
 
 @Entity()
 @Table(name = "ep_entities")
 public class EntitySet {
 	@Id
-	@GeneratedValue
-	private long id;
+	private int id;
 
 	@NotNull
 	private UUID entity;
 
 	@NotNull
-	private long owner;
+	private int owner;
 
-	@JoinTable(
+	/*@JoinTable(
 		      name="ep_entities_players",
 		      joinColumns={@JoinColumn(name="entities_id", referencedColumnName="id")},
 		      inverseJoinColumns={@JoinColumn(name="players_id", referencedColumnName="id")})
-	private List<PlayerSet> members;
+	private List<PlayerSet> members;*/
 
 	Date regtime;
 
@@ -50,11 +43,11 @@ public class EntitySet {
 
 	private String lastWorld;
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public long getId() {
+	public int getId() {
 		return this.id;
 	}
 
@@ -66,15 +59,16 @@ public class EntitySet {
 		return this.entity;
 	}
 
-	public void setOwner(long owner) {
+	public void setOwner(int owner) {
 		this.owner = owner;
 	}
 	
 	public void setOwner(PlayerSet owner) {
 		this.owner = owner.getId();
+		Thread.dumpStack();
 	}
 
-	public long getOwner() {
+	public int getOwner() {
 		return this.owner;
 	}
 	
@@ -84,7 +78,7 @@ public class EntitySet {
 
 	public void setOwner(String owner) {
 		PlayerSet playerset = EntityProtect.getInstance().getDatabase().find(PlayerSet.class).where()
-				.eq("player", owner).findUnique();
+				.ieq("player", owner).findUnique();
 		if (playerset == null) {
 			playerset = new PlayerSet();
 			playerset.setPlayer(owner);
@@ -94,7 +88,7 @@ public class EntitySet {
 		this.setOwner(playerset.getId());
 	}
 
-	public void setMembers(List<PlayerSet> members) {
+	/*public void setMembers(List<PlayerSet> members) {
 		this.members = members;
 	}
 
@@ -134,7 +128,7 @@ public class EntitySet {
 			players.add(members.get(i).getPlayer());
 		}
 		return players;
-	}
+	}*/
 
 	public void setRegtime(Date regtime) {
 		this.regtime = regtime;

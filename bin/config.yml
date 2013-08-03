@@ -6,22 +6,28 @@ general:
   max-entities-per-player: 60
   #This plugin uses Bukkit's database, If you want to set database, edit bukkit.yml
 
-# true = enabled if only have owners
-# false = not enabled
-# nonowner = enabled except owner, But unregistered entities are also enabled
+# true = protected if only have owners
+# false = not protected
+# nonowner = protected except owner, But unregistered entities are also protected
+# Don't set breeding or ride-horse or tame-horse to nonowner, if do players can't tame them
 protect-entities:
   damaging: false
-  damage-force-1hp: true
+  damage-force-1hp: false
   slaying: false
   shearing-sheep: true
   shearing-mushroomcow: nonowner
   filling-cow: true
   filling-mushroomcow: true
+  # Pushing: WIP
   pushing: false
   environment-damaging: true
   monster-damaging: true
   breeding: true
   dropping-items: true
+  inventory-horse: true
+  ride: true
+  tame-horse: true
+  saddle-pig: true
 
 enabled-entities:
   Chicken: true
@@ -31,6 +37,7 @@ enabled-entities:
   Sheep: true
   Wolf: true
   Ozelot: true
+  Horse: true
   
 protect-environment:
   set-owner-when-breeding-natural: true
@@ -45,8 +52,8 @@ protect-environment:
     respawn-maxrange: 40
     
     # Set regen percent.
-    # YOU MUST NOT SET `enviroment-kill` to 1 UNLESS animal spawning is DISABLED
-    # OR ANIMAL SPAWN TICK IS 0. IF NOT, ANIMALS WILL RULE THE WORLD
+    # YOU MUST DO NOT SET `enviroment-kill` to 1 UNLESS animal spawning is DISABLED
+    # IF NOT, ANIMALS WILL RULE THE WORLD
     player-kill: 1
     enviroment-kill: 0.5
     owner-set: 1
@@ -60,6 +67,7 @@ language:
     Sheep: 'Sheep'
     Wolf: 'Wolf'
     Ozelot: 'Cat'
+    Horse: 'Horse'
   commands:
     addmember:
       help: 'Adds member of your animals in range.'
@@ -124,7 +132,7 @@ language:
   breed-setowner: '&a{1} &c{2}&as that you breeded were natural animals. \nSo they now belong to you, so you can breed &b{3} &amore animals.'
   breed-fail: '&cSorry, You can''t breed anymore. Kill your own animals to breed again.'
   slay-animal: '&e{1}&c slayed Your &a{2}&c. You can breed &b{3}&c more animals.'
-  owner-info: '&cThis {1}''s Owner is &e{2}.'
+  owner-info: '&cThis &a{1}&c''s Owner is &e{2}.'
   access-denied: '&cSorry, you can''t do that.'
   you: 'You'
   environment: 'Environment'

@@ -1,7 +1,6 @@
 package kr.kkiro.projects.bukkit.EntityProtect.utils.database;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,8 +11,7 @@ import com.avaje.ebean.validation.NotNull;
 @Table(name = "ep_players")
 public class PlayerSet {
 	@Id
-	@GeneratedValue
-	private long id;
+	private int id;
 
 	@NotNull
 	private int breedCount;
@@ -21,11 +19,11 @@ public class PlayerSet {
 	@NotEmpty
 	private String player;
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public long getId() {
+	public int getId() {
 		return this.id;
 	}
 	

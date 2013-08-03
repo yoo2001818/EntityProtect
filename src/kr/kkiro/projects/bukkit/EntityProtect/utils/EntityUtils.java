@@ -37,7 +37,7 @@ public class EntityUtils {
 			killer = Config.getString("language.environment");
 		}
 		if(exactPlayer != null) {
-			ChatUtils.sendLang(exactPlayer, "slay-animal", killer,
+			ChatUtils.sendLang(exactPlayer, "slay-animal", (player.equals(killer) ? "#you" : killer),
 					"#mobs."+entity.getType().getName(), Integer.toString(remainBreedCount+1));
 		}
 		ChatUtils.sendLang(EntityProtect.getInstance().getServer().getConsoleSender(), "console.slay-animal",
@@ -64,7 +64,7 @@ public class EntityUtils {
 		int maxBreedCount = Config.getInt("general.max-entities-per-player");
 		int remainBreedCount = maxBreedCount-breedCount;
 		if(exactPlayer != null) {
-			if(!PermissionUtils.canBreed(exactPlayer, false)) {
+			if(!PermissionUtils.canBreed(exactPlayer, null)) {
 				return false;
 			}
 			if(!silent) {

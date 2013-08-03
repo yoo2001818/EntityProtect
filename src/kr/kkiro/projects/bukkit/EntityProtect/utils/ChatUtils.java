@@ -13,7 +13,7 @@ public class ChatUtils {
 			if(replacement.startsWith("#", 0)) {
 				replacement = Config.getString("language."+replacement.substring(1));
 			}
-			out = out.replace("{" + Integer.toString(i + 1) + "}", replaces[i]);
+			out = out.replace("{" + Integer.toString(i + 1) + "}", replacement);
 		}
 		return out;
 	}

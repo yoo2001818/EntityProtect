@@ -4,6 +4,16 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 public class BreedChecker {
+	public static boolean horseCheck(EntityType entity, Material item) {
+		if (!entity.equals(EntityType.HORSE))
+			return false;
+		if (item.equals(Material.GOLDEN_APPLE))
+			return true;
+		if (item.equals(Material.GOLDEN_CARROT))
+			return true;
+		return false;
+	}
+	
 	public static boolean wolfCheck(EntityType entity, Material item) {
 		if (!entity.equals(EntityType.WOLF))
 			return false;
@@ -75,6 +85,8 @@ public class BreedChecker {
 		if (ozelotCheck(entity, item))
 			return true;
 		if (chickenCheck(entity, item))
+			return true;
+		if (horseCheck(entity, item))
 			return true;
 		return false;
 	}

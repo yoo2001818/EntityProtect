@@ -4,25 +4,33 @@ import java.util.List;
 
 import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.ChatUtils;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityActivity;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityUtils;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.PermissionUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.cache.BreedCache;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.config.Config;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.PlayerSet;
 
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTameEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class EntityListener implements Listener {
 	@EventHandler
@@ -31,7 +39,6 @@ public class EntityListener implements Listener {
 		List<Entity> entities = original.getNearbyEntities(1, 1, 1);
 		if (!EntityUtils.isEnabled(original.getType()))
 			return;
-		EntityProtect.info("Passed 1");
 		if(event.getSpawnReason().equals(SpawnReason.EGG)) {
 			BreedCache.getInstance().refresh();
 			for (Entity entity : entities) {
@@ -45,19 +52,15 @@ public class EntityListener implements Listener {
 			}
 		}
 		if(event.getSpawnReason().equals(SpawnReason.BREEDING)) {
-			EntityProtect.info("Passed 2");
 			BreedCache.getInstance().refresh();
 			Boolean foundPlayer = false;
 			String player = "";
 			short naturalCount = 0;
 			for (Entity entity : entities) {
-				EntityProtect.info(entity.getType().toString()+" loop");
 				if (!entity.getType().equals(original.getType())) continue;
 				String playerMatch = BreedCache.getInstance().findPlayer(entity);
-				EntityProtect.info("result"+playerMatch);
 				if(playerMatch == null) continue;
 				if(!foundPlayer) {
-					EntityProtect.info("Success");
 					player = playerMatch;
 					if (!EntityUtils.registerEntity(player, original)) {
 						event.setCancelled(true);
@@ -109,29 +112,117 @@ public class EntityListener implements Listener {
 		LivingEntity entity = event.getEntity();
 		if (!EntityUtils.isEnabled(entity.getType()))
 			return;
-		String killer = null;
-		if(entity.getKiller() != null) killer = entity.getKiller().getName();
-		EntityUtils.removeEntity(entity, killer);
+		EntitySet entityset = DatabaseUtils.searchEntity(entity.getUniqueId());
+		Player killer = null;
+		if(entity.getKiller() != null) {
+			killer = entity.getKiller();
+			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE, killer, entityset)) {
+				event.getDrops().clear();
+				event.setDroppedExp(0);
+			}
+		}
+		EntityUtils.removeEntity(entity, killer.getName());
 		
 	}
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
-		//TODO: Get reason and process
+		Entity entity = event.getEntity();
+		if (!EntityUtils.isEnabled(entity.getType()))
+			return;
+		if(event.getCause().equals(DamageCause.ENTITY_ATTACK)) return;
+		EntitySet entityset = DatabaseUtils.searchEntity(entity.getUniqueId());
+		if(!PermissionUtils.canBypass(EntityActivity.ENVIRONMENT_DAMAGE, entityset != null)) {
+			event.setCancelled(true);
+			event.setDamage(0);
+		}
 	}
 	
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		//TODO: Get damager and process
+		if(!(event.getEntity() instanceof LivingEntity)) return;
+		LivingEntity entity = (LivingEntity)(event.getEntity());
+		if (!EntityUtils.isEnabled(entity.getType()))
+			return;
+		EntitySet entityset = DatabaseUtils.searchEntity(entity.getUniqueId());
+		if(event.getDamager() instanceof Player) {
+			Player player = (Player)(event.getDamager());
+			if (entityset != null) {
+				String owner = entityset.getOwnerItem().getPlayer();
+				ChatUtils.sendLang(player, "owner-info", 
+						"#mobs."+entity.getType().getName(),
+						(owner.equals(player.getName())) ? "#you" : owner);
+			}
+			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE, player, entityset)) {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
+				return;
+			}
+			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE_1HP, player, entityset)) {
+				event.setDamage(1);
+			}
+			if(!PermissionUtils.canBypass(EntityActivity.SLAY, player, entityset)) {
+				if(event.getDamage() >= entity.getHealth()) {
+					entity.setHealth(event.getDamage() + 1);
+				}
+			}
+		} else {
+			if(!PermissionUtils.canBypass(EntityActivity.ENVIRONMENT_DAMAGE, entityset != null)) {
+				event.setCancelled(true);
+				event.setDamage(0);
+			}
+		}
 	}
 	
 	@EventHandler
 	public void onEntityTame(EntityTameEvent event) {
 		if (!EntityUtils.isEnabled(event.getEntity().getType()))
 			return;
-		if (!EntityUtils.registerEntity(event.getOwner().getName(), event.getEntity())) {
+		LivingEntity entity = event.getEntity();
+		AnimalTamer tamer = event.getOwner();
+		if(entity instanceof Horse) {
+			Player player = EntityProtect.getInstance().getServer().getPlayerExact(tamer.getName());
+			EntitySet entityset = DatabaseUtils.searchEntity(entity.getUniqueId());
+			if(player == null) {
+				EntityProtect.severe("Tried to get Player from EntityTameEvent, but failed!");
+				event.setCancelled(true);
+				return;
+			}
+			if(!PermissionUtils.canBypass(EntityActivity.TAME_HORSE, player, entityset)) {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
+				return;
+			}
+			
+		}
+		if (!EntityUtils.registerEntity(tamer.getName(), entity)) {
 			event.setCancelled(true);
 			return;
+		}
+	}
+	
+	@EventHandler
+	public void onVehicleEnter(VehicleEnterEvent event) {
+		if (!EntityUtils.isEnabled(event.getVehicle().getType()))
+			return;
+		Vehicle entity = event.getVehicle();
+		EntitySet entityset = DatabaseUtils.searchEntity(entity.getUniqueId());
+		Entity rider = event.getEntered();
+		if(rider instanceof Player) {
+			Player player = (Player) rider;
+			if(!PermissionUtils.canBypass(EntityActivity.RIDE, player, entityset)) {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
+				return;
+			}
+		} else {
+			if(!PermissionUtils.canBypass(EntityActivity.RIDE, entityset != null)) {
+				event.setCancelled(true);
+				return;
+			}
 		}
 	}
 }
