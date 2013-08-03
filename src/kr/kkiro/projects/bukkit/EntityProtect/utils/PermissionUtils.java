@@ -19,6 +19,7 @@ public class PermissionUtils {
 	public static boolean canBypass(String activity, Player player, EntitySet entity) {
 		if(player.hasPermission("entityprotect.bypass-protect."+activity)) return true;
 		if(entity == null) return !(Config.getString("protect-entities."+activity).equals("nonowner"));
+		if(entity != null && Config.getString("protect-entities."+activity).equals("false")) return true;
 		if(entity.getOwnerItem().getPlayer().equals(player.getName())) return true;
 		return false;
 	}

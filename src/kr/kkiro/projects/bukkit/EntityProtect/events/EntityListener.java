@@ -168,7 +168,7 @@ public class EntityListener implements Listener {
 				}
 			}
 		} else {
-			if(!PermissionUtils.canBypass(EntityActivity.ENVIRONMENT_DAMAGE, entityset != null)) {
+			if(!PermissionUtils.canBypass(EntityActivity.MOB_DAMAGE, entityset != null)) {
 				event.setCancelled(true);
 				event.setDamage(0);
 			}

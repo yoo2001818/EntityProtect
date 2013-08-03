@@ -19,5 +19,6 @@ public class EntityActivity {
 	public static final String TAME_HORSE = "tame-horse";
 	public static final String SADDLE_PIG = "saddle-pig";
 	public static final String LEAD = "lead";
+	public static final String NAME_TAG = "nametag";
 			
 }

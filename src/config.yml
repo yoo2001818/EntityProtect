@@ -11,7 +11,7 @@ general:
 # nonowner = protected except owner, But unregistered entities are also protected
 # Don't set breeding or ride-horse or tame-horse to nonowner, if do players can't tame them
 protect-entities:
-  damaging: false
+  damaging: true
   damage-force-1hp: false
   slaying: false
   shearing-sheep: true
