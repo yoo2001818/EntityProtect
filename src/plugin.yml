@@ -32,3 +32,4 @@ permissions:
       entityprotect.bypass-protect.tame-horse: true
       entityprotect.bypass-protect.saddle-pig: true
       entityprotect.bypass-protect.lead: true
+      entityprotect.bypass-protect.nametag: true

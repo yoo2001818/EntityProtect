@@ -116,7 +116,7 @@ public class EntityListener implements Listener {
 		Player killer = null;
 		if(entity.getKiller() != null) {
 			killer = entity.getKiller();
-			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE, killer, entityset)) {
+			if(!PermissionUtils.canBypass(EntityActivity.DROP, killer, entityset)) {
 				event.getDrops().clear();
 				event.setDroppedExp(0);
 			}
