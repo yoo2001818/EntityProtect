@@ -31,3 +31,4 @@ permissions:
       entityprotect.bypass-protect.ride: true
       entityprotect.bypass-protect.tame-horse: true
       entityprotect.bypass-protect.saddle-pig: true
+      entityprotect.bypass-protect.lead: true

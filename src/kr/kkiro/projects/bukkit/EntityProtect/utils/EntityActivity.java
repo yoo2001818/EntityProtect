@@ -18,5 +18,6 @@ public class EntityActivity {
 	public static final String RIDE = "ride";
 	public static final String TAME_HORSE = "tame-horse";
 	public static final String SADDLE_PIG = "saddle-pig";
+	public static final String LEAD = "lead";
 			
 }

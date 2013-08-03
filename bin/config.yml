@@ -28,6 +28,7 @@ protect-entities:
   ride: true
   tame-horse: true
   saddle-pig: true
+  lead: true
 
 enabled-entities:
   Chicken: true

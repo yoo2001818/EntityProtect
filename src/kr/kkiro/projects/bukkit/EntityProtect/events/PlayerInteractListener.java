@@ -73,6 +73,16 @@ public class PlayerInteractListener implements Listener {
 				}
 			}
 		}
+		if (material.equals(Material.LEASH)) {
+			if (PermissionUtils.canBypass(EntityActivity.LEAD, player, entityset)) {
+				return;
+			} else {
+				ChatUtils.sendLang(player, "access-denied");
+				event.setCancelled(true);
+				EntityUtils.playEffect(player, entity);
+				return;
+			}
+		}
 		if (entity.getType().equals(EntityType.PIG) && material.equals(Material.SADDLE)) {
 			if (PermissionUtils.canBypass(EntityActivity.SADDLE_PIG, player, entityset)) {
 				return;
