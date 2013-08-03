@@ -165,10 +165,10 @@ public class PlayerInteractListener implements Listener {
 					ChatUtils.sendLang(player, "access-denied");
 					event.setCancelled(true);
 					EntityUtils.playEffect(player, entity);
-					//TODO: workaround before horse tame event comes
-					EntityUtils.registerEntity(player.getName(), entity);
 					return;
 				}
+				//TODO: workaround before horse tame event comes
+				EntityUtils.registerEntity(player.getName(), entity);
 			}
 		}
 	}
