@@ -2,3 +2,32 @@ name: EntityProtect
 main: kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect
 version: 0.0.1
 database: true
+permissions:
+  entityprotect.*:
+    default: op
+    description: Everything
+    children:
+      # entityprotect.create-entities.*: true
+      entityprotect.bypass-protect.*: true
+      # entityprotect.entity-own.*: false
+      # entityprotect.command.*: true
+  entityprotect.bypass-protect.*:
+    default: op
+    description: Bypass protection
+    children:
+      entityprotect.bypass-protect.damaging: true
+      entityprotect.bypass-protect.damage-force-1hp: true
+      entityprotect.bypass-protect.slaying: true
+      entityprotect.bypass-protect.shearing-sheep: true
+      entityprotect.bypass-protect.shearing-mushroomcow: true
+      entityprotect.bypass-protect.filling-cow: true
+      entityprotect.bypass-protect.filling-mushroomcow: true
+      entityprotect.bypass-protect.pushing: true
+      entityprotect.bypass-protect.environment-damaging: true
+      entityprotect.bypass-protect.monster-damaging: true
+      entityprotect.bypass-protect.breeding: true
+      entityprotect.bypass-protect.dropping-items: true
+      entityprotect.bypass-protect.inventory-horse: true
+      entityprotect.bypass-protect.ride: true
+      entityprotect.bypass-protect.tame-horse: true
+      entityprotect.bypass-protect.saddle-pig: true
