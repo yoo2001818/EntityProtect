@@ -167,8 +167,6 @@ public class PlayerInteractListener implements Listener {
 					EntityUtils.playEffect(player, entity);
 					return;
 				}
-				//TODO: workaround before horse tame event comes
-				EntityUtils.registerEntity(player.getName(), entity);
 			}
 		}
 	}

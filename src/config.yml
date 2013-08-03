@@ -37,7 +37,7 @@ enabled-entities:
   Sheep: true
   Wolf: true
   Ozelot: true
-  Horse: true
+  EntityHorse: true
   
 protect-environment:
   set-owner-when-breeding-natural: true
@@ -67,7 +67,7 @@ language:
     Sheep: 'Sheep'
     Wolf: 'Wolf'
     Ozelot: 'Cat'
-    Horse: 'Horse'
+    EntityHorse: 'Horse'
   commands:
     addmember:
       help: 'Adds member of your animals in range.'
