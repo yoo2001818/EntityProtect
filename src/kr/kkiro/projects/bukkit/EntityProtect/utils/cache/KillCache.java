@@ -5,26 +5,24 @@ import java.util.List;
 
 import org.bukkit.entity.Entity;
 
-public class BreedCache {
+public class KillCache {
 	public static final int EXPIRE_TIME = 30000;
 
-	private static BreedCache instance;
+	private static KillCache instance;
 
 	private List<Long> cacheTime;
-	private List<String> cachePlayer;
 	private List<Entity> cacheEntity;
 
-	public static BreedCache getInstance() {
+	public static KillCache getInstance() {
 		return instance;
 	}
 
 	public static void init() {
-		instance = new BreedCache();
+		instance = new KillCache();
 	}
 
-	public BreedCache() {
+	public KillCache() {
 		cacheTime = new ArrayList<Long>();
-		cachePlayer = new ArrayList<String>();
 		cacheEntity = new ArrayList<Entity>();
 	}
 
@@ -35,7 +33,6 @@ public class BreedCache {
 			long time = cacheTime.get(i);
 			if (expireTime > time) {
 				cacheTime.remove(i);
-				cachePlayer.remove(i);
 				cacheEntity.remove(i);
 				--i;
 				--size;
@@ -45,23 +42,12 @@ public class BreedCache {
 
 	public void clear() {
 		cacheTime.removeAll(cacheTime);
-		cachePlayer.removeAll(cachePlayer);
 		cacheEntity.removeAll(cacheEntity);
 	}
 
-	public void add(String player, Entity entity) {
+	public void add(Entity entity) {
 		cacheTime.add(System.currentTimeMillis());
-		cachePlayer.add(player);
 		cacheEntity.add(entity);
-	}
-
-	public void remove(String player) {
-		int i = cachePlayer.indexOf(player);
-		if (i == -1)
-			return;
-		cacheTime.remove(i);
-		cachePlayer.remove(i);
-		cacheEntity.remove(i);
 	}
 
 	public void remove(Entity entity) {
@@ -69,14 +55,10 @@ public class BreedCache {
 		if (i == -1)
 			return;
 		cacheTime.remove(i);
-		cachePlayer.remove(i);
 		cacheEntity.remove(i);
 	}
 
-	public String findPlayer(Entity entity) {
-		int i = cacheEntity.indexOf(entity);
-		if (i == -1)
-			return null;
-		return cachePlayer.get(i);
+	public boolean hasEntity(Entity entity) {
+		return cacheEntity.contains(entity);
 	}
 }

@@ -45,7 +45,7 @@ public class PlayerInteractListener implements Listener {
 		}
 		if (entity instanceof Ageable) {
 			if (((Ageable) entity).canBreed() && BreedChecker.check(entity.getType(), material)) {
-				if (PermissionUtils.canBreed(player, entityset)) {
+				if (PermissionUtils.canBreed(player, entityset, entity)) {
 					BreedCache.getInstance().refresh();
 					BreedCache.getInstance().add(player.getName(), entity);
 					return;
@@ -62,7 +62,7 @@ public class PlayerInteractListener implements Listener {
 					.getType().equals(Material.BONE))
 					|| (entity instanceof Ocelot && player.getItemInHand()
 					.getType().equals(Material.RAW_FISH))) {
-				if (PermissionUtils.canBreed(player, entityset)) {
+				if (PermissionUtils.canBreed(player, entityset, entity)) {
 					BreedCache.getInstance().refresh();
 					BreedCache.getInstance().add(player.getName(), entity);
 					return;
@@ -159,7 +159,7 @@ public class PlayerInteractListener implements Listener {
 	public void onPlayerEggThrow(PlayerEggThrowEvent event) {
 		Player player = event.getPlayer();
 		Egg entity = event.getEgg();
-		if (PermissionUtils.canBreed(player, null)) {
+		if (PermissionUtils.canBreed(player, null, null)) {
 			BreedCache.getInstance().refresh();
 			BreedCache.getInstance().add(player.getName(), entity);
 			return;

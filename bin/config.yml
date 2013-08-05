@@ -4,6 +4,8 @@ general:
   allow-groups: true
   allow-trading: true
   max-entities-per-player: 60
+  # When owner is in this range, animal damage protection won't work
+  no-protection-range: 16
   #This plugin uses Bukkit's database, If you want to set database, edit bukkit.yml
 
 # true = protected if only have owners
@@ -29,6 +31,7 @@ protect-entities:
   tame-horse: true
   saddle-pig: true
   lead: true
+  nametag: nonowner
 
 enabled-entities:
   Chicken: true
@@ -43,7 +46,8 @@ enabled-entities:
 protect-environment:
   set-owner-when-breeding-natural: true
   extinction:
-    respawn-delay: 600
+    # In server ticks (20 ticks = 1 second)
+    respawn-delay: 1200
     # Animals will respawn on this blocks.
     respawn-blocks: [2, 110, 18]
     # If it can't find respawn-blocks, It will spawn on random place

@@ -1,6 +1,6 @@
 name: EntityProtect
 main: kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect
-version: 0.0.1
+version: 0.0.2
 database: true
 permissions:
   entityprotect.*:

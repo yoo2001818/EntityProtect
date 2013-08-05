@@ -1,5 +1,7 @@
 package kr.kkiro.projects.bukkit.EntityProtect.utils.config;
 
+import java.util.List;
+
 import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,5 +38,13 @@ public class Config {
 
 	public static int getInt(String path) {
 		return getInstance().getConfig().getInt(path);
+	}
+	
+	public static double getDouble(String path) {
+		return getInstance().getConfig().getDouble(path);
+	}
+	
+	public static List<Short> getShortList(String path) {
+		return getInstance().getConfig().getShortList(path);
 	}
 }

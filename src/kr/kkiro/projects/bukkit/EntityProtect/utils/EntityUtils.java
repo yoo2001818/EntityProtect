@@ -1,20 +1,126 @@
 package kr.kkiro.projects.bukkit.EntityProtect.utils;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.cache.KillCache;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.config.Config;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.PlayerSet;
 
 import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class EntityUtils {
+	public static boolean isOwnerNear(Entity entity, EntitySet entityset) {
+		if(entityset == null) return false;
+		int range = Config.getInt("general.no-protection-range");
+		Player player = EntityProtect.getInstance().getServer().getPlayerExact(entityset.getOwnerItem().getPlayer());
+		if(player == null) return false;
+		if(!player.isOnline()) return false;
+		if(player.getWorld() != entity.getWorld()) return false;
+		return player.getLocation().distance(entity.getLocation()) < range;
+	}
+	public static void respawnEntity(Entity entity, String reason) {
+		KillCache.getInstance().refresh();
+		if(KillCache.getInstance().hasEntity(entity)) return;
+		KillCache.getInstance().add(entity);
+		double percent = Config.getDouble("protect-environment.extinction."+reason);
+		Random random = new Random();
+		int delay = Config.getInt("protect-environment.extinction.respawn-delay");
+		if(percent < random.nextDouble()) return;
+		final class Respawner implements Runnable {
+			public Location location;
+			public EntityType entitytype;
+			public Random random;
+			public void run() {
+				ArrayList<Location> possibleLocation = new ArrayList<Location>();
+				ArrayList<Location> failsafeLocation = new ArrayList<Location>();
+				int deadX = location.getBlockX();
+				int deadZ = location.getBlockZ();
+				World deadWorld = location.getWorld();
+				List<Short> allowedBlocks = Config.getShortList("protect-environment.extinction.respawn-blocks");
+				int maxRange = Config.getInt("protect-environment.extinction.respawn-maxrange");
+				int minRange = Config.getInt("protect-environment.extinction.respawn-minrange");
+				boolean failsafe = Config.getBoolean("protect-environment.extinction.respawn-failsafe");
+				for(int addX = -maxRange; addX <= maxRange; ++ addX) {
+					if(Math.abs(addX) < minRange) continue;
+					for(int addZ = -maxRange; addZ <= maxRange; ++ addZ) {
+						if(Math.abs(addZ) < minRange) continue;
+						int currentX = deadX + addX;
+						int currentZ = deadZ + addZ;
+						Block currentBlock = deadWorld.getHighestBlockAt(currentX, currentZ);
+						if(!allowedBlocks.contains(currentBlock.getTypeId()))
+							if(failsafe && currentBlock.getType().isSolid())
+								failsafeLocation.add(currentBlock.getLocation());
+						 else possibleLocation.add(currentBlock.getLocation());
+					}
+				}
+				Location spawnLoc;
+				if(possibleLocation.size() > 0) {
+					spawnLoc = possibleLocation.get(random.nextInt(possibleLocation.size()));
+				} else {
+					if(!failsafe) return;
+					if(failsafeLocation.size() == 0) return;
+					spawnLoc = failsafeLocation.get(random.nextInt(failsafeLocation.size()));
+				}
+				spawnLoc.add(0, 1, 0);
+				LivingEntity entity = (LivingEntity) (deadWorld.spawnEntity(spawnLoc, entitytype));
+				if(entity instanceof Horse) {
+					Horse horse = (Horse)entity;
+					Horse.Style[] styles = Horse.Style.values();
+					Horse.Color[] colors = Horse.Color.values();
+					horse.setMaxHealth(random.nextInt(16)+15);
+					if(random.nextInt(100) < 10) horse.setVariant(Variant.DONKEY);
+					horse.setStyle(styles[random.nextInt(styles.length)]);
+					horse.setColor(colors[random.nextInt(colors.length)]);
+				}
+				entity.setRemoveWhenFarAway(false);
+				/*//TODO firework to track spawned mobs
+				final class Fireworker implements Runnable {
+					public World deadWorld;
+					public Location spawnLoc;
+					public int repeats = 0;
+					public int id;
+					public void run() {
+						repeats += 1;
+						if(repeats > 40) {
+							EntityProtect.getInstance().getServer().getScheduler().cancelTask(id);
+						}
+						Firework fw = (Firework) deadWorld.spawnEntity(spawnLoc, EntityType.FIREWORK);
+						FireworkMeta fwm = fw.getFireworkMeta();
+						FireworkEffect effect = FireworkEffect.builder().with(Type.BALL_LARGE).withColor(Color.WHITE).withFlicker().withTrail().withFade(Color.AQUA).build();
+						fwm.addEffect(effect);
+						fwm.setPower(3);
+						fw.setFireworkMeta(fwm);
+					}
+				}
+				Fireworker fw = new Fireworker();
+				fw.deadWorld = deadWorld;
+				fw.spawnLoc = spawnLoc;
+				fw.id = EntityProtect.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(EntityProtect.getInstance(), fw, 0, 5);
+				*/
+			}
+		}
+		Respawner respawner = new Respawner();
+		respawner.location = entity.getLocation();
+		respawner.entitytype = entity.getType();
+		respawner.random = random;
+		EntityProtect.getInstance().getServer().getScheduler().runTaskLater(EntityProtect.getInstance(), respawner, delay);
+	}
 	public static boolean isEnabled(EntityType type) {
 		return Config.getBoolean("enabled-entities." + type.getName());
 	}
@@ -64,7 +170,7 @@ public class EntityUtils {
 		int maxBreedCount = Config.getInt("general.max-entities-per-player");
 		int remainBreedCount = maxBreedCount-breedCount;
 		if(exactPlayer != null) {
-			if(!PermissionUtils.canBreed(exactPlayer, null)) {
+			if(!PermissionUtils.canBreed(exactPlayer, null, null)) {
 				return false;
 			}
 			if(!silent) {

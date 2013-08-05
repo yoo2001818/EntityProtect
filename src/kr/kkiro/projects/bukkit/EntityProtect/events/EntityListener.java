@@ -5,6 +5,7 @@ import java.util.List;
 import kr.kkiro.projects.bukkit.EntityProtect.bukkit.EntityProtect;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.ChatUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityActivity;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityRespawnReason;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.EntityUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.PermissionUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.cache.BreedCache;
@@ -13,6 +14,7 @@ import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.PlayerSet;
 
+import org.bukkit.Location;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
@@ -39,6 +41,27 @@ public class EntityListener implements Listener {
 		List<Entity> entities = original.getNearbyEntities(1, 1, 1);
 		if (!EntityUtils.isEnabled(original.getType()))
 			return;
+		if(event.getSpawnReason().equals(SpawnReason.SPAWNER_EGG)) {
+			Player[] players = EntityProtect.getInstance().getServer().getOnlinePlayers();
+			Location myLoc = original.getLocation();
+			Player closest = null;
+			double closestDist = Double.MAX_VALUE;
+			for (Player player : players) {
+				Location loc = player.getLocation();
+				if(!player.getWorld().equals(myLoc.getWorld())) continue;
+				if(loc.distanceSquared(myLoc) < closestDist) {
+					closest = player;
+					closestDist = loc.distanceSquared(myLoc);
+				}
+			}
+			if (closest == null) {
+				event.setCancelled(true);
+				return;
+			}
+			if (!EntityUtils.registerEntity(closest.getName(), original)) {
+				event.setCancelled(true);
+			}
+		}
 		if(event.getSpawnReason().equals(SpawnReason.EGG)) {
 			BreedCache.getInstance().refresh();
 			for (Entity entity : entities) {
@@ -79,7 +102,7 @@ public class EntityListener implements Listener {
 							}
 						} else {
 							naturalCount += 1;
-							//TODO: try to respawn mobs
+							EntityUtils.respawnEntity(entity, EntityRespawnReason.OWNER_SET);
 						}
 					}
 				}
@@ -116,13 +139,14 @@ public class EntityListener implements Listener {
 		Player killer = null;
 		if(entity.getKiller() != null) {
 			killer = entity.getKiller();
-			if(!PermissionUtils.canBypass(EntityActivity.DROP, killer, entityset)) {
+			if(!PermissionUtils.canBypass(EntityActivity.DROP, killer, entityset) && !EntityUtils.isOwnerNear(entity, entityset)) {
 				event.getDrops().clear();
 				event.setDroppedExp(0);
 			}
+			EntityUtils.removeEntity(entity, killer.getName());
+		} else {
+			EntityUtils.removeEntity(entity, null);
 		}
-		EntityUtils.removeEntity(entity, killer.getName());
-		
 	}
 
 	@EventHandler
@@ -132,9 +156,17 @@ public class EntityListener implements Listener {
 			return;
 		if(event.getCause().equals(DamageCause.ENTITY_ATTACK)) return;
 		EntitySet entityset = DatabaseUtils.searchEntity(entity.getUniqueId());
-		if(!PermissionUtils.canBypass(EntityActivity.ENVIRONMENT_DAMAGE, entityset != null)) {
+		if(!PermissionUtils.canBypass(EntityActivity.ENVIRONMENT_DAMAGE, entityset != null) && !EntityUtils.isOwnerNear(entity, entityset)) {
 			event.setCancelled(true);
 			event.setDamage(0);
+		}
+		if(entityset == null) {
+			if(entity instanceof LivingEntity) {
+				LivingEntity living = (LivingEntity) entity;
+				if(event.getDamage() >= living.getHealth()) {
+					EntityUtils.respawnEntity(entity, EntityRespawnReason.ENVIRONMENT_KILL);
+				}
+			}
 		}
 	}
 	
@@ -153,25 +185,34 @@ public class EntityListener implements Listener {
 						"#mobs."+entity.getType().getName(),
 						(owner.equals(player.getName())) ? "#you" : owner);
 			}
-			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE, player, entityset)) {
+			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE, player, entityset) && !EntityUtils.isOwnerNear(entity, entityset)) {
 				ChatUtils.sendLang(player, "access-denied");
 				event.setCancelled(true);
 				EntityUtils.playEffect(player, entity);
 				return;
 			}
-			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE_1HP, player, entityset)) {
+			if(!PermissionUtils.canBypass(EntityActivity.DAMAGE_1HP, player, entityset) && !EntityUtils.isOwnerNear(entity, entityset)) {
 				event.setDamage(1);
 			}
-			if(!PermissionUtils.canBypass(EntityActivity.SLAY, player, entityset)) {
+			if(!PermissionUtils.canBypass(EntityActivity.SLAY, player, entityset) && !EntityUtils.isOwnerNear(entity, entityset)) {
 				if(event.getDamage() >= entity.getHealth()) {
 					entity.setHealth(event.getDamage() + 1);
 				}
+			} else {
+				if(entityset == null)
+					if(event.getDamage() >= entity.getHealth()) {
+						EntityUtils.respawnEntity(entity, EntityRespawnReason.PLAYER_KILL);
+					}
 			}
 		} else {
-			if(!PermissionUtils.canBypass(EntityActivity.MOB_DAMAGE, entityset != null)) {
+			if(!PermissionUtils.canBypass(EntityActivity.MOB_DAMAGE, entityset != null) && !EntityUtils.isOwnerNear(entity, entityset)) {
 				event.setCancelled(true);
 				event.setDamage(0);
 			}
+			if(entityset == null)
+				if(event.getDamage() >= entity.getHealth()) {
+					EntityUtils.respawnEntity(entity, EntityRespawnReason.ENVIRONMENT_KILL);
+				}
 		}
 	}
 	

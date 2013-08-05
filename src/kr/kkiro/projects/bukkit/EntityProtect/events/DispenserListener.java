@@ -1,5 +1,6 @@
 package kr.kkiro.projects.bukkit.EntityProtect.events;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -10,6 +11,9 @@ public class DispenserListener implements Listener {
 
 	@EventHandler
 	public void onBlockDispense(BlockDispenseEvent event) {
+		if(!event.getBlock().getType().equals(Material.DISPENSER)) return;
+		if(!(event.getItem().getType().equals(Material.EGG) || event.getItem().getType().equals(Material.MONSTER_EGG) || event.getItem().getType().equals(Material.MONSTER_EGGS))) return;
+		event.setCancelled(true);
 		// TODO: add to cache
 	}
 

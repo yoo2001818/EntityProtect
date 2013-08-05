@@ -6,6 +6,7 @@ import kr.kkiro.projects.bukkit.EntityProtect.utils.database.DatabaseUtils;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.PlayerSet;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class PermissionUtils {
@@ -24,8 +25,8 @@ public class PermissionUtils {
 		return false;
 	}
 	public static boolean canBypass(String activity, Boolean hasOwner) {
-		if(!hasOwner && Config.getString("protect-entities."+activity).equals("false")) return true;
-		if(Config.getString("protect-entities."+activity).equals("nonowner")) return false;
+		if(!hasOwner) return !(Config.getString("protect-entities."+activity).equals("nonowner"));
+		if(hasOwner && Config.getString("protect-entities."+activity).equals("false")) return true;
 		return false;
 	}
 	public static boolean canBypassLimit(Player player) {
@@ -33,8 +34,8 @@ public class PermissionUtils {
 		if(player.hasPermission("entityprotect.bypass-limit")) return true;
 		return false;
 	}
-	public static boolean canBreed(Player player, EntitySet entity) {
-		if(!canBypass(EntityActivity.BREED, player, entity)) {
+	public static boolean canBreed(Player player, EntitySet entityset, Entity entity) {
+		if(!canBypass(EntityActivity.BREED, player, entityset) && !EntityUtils.isOwnerNear(entity, entityset)) {
 			ChatUtils.sendLang(player, "access-denied");
 			return false;
 		}

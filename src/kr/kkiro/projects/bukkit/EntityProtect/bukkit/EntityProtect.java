@@ -8,6 +8,7 @@ import kr.kkiro.projects.bukkit.EntityProtect.commands.CommandManager;
 import kr.kkiro.projects.bukkit.EntityProtect.events.EntityListener;
 import kr.kkiro.projects.bukkit.EntityProtect.events.PlayerInteractListener;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.cache.BreedCache;
+import kr.kkiro.projects.bukkit.EntityProtect.utils.cache.KillCache;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.config.Config;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.Database;
 import kr.kkiro.projects.bukkit.EntityProtect.utils.database.EntitySet;
@@ -26,6 +27,7 @@ public class EntityProtect extends JavaPlugin {
 		Database.init();
 		CommandManager.init();
 		BreedCache.init();
+		KillCache.init();
 
 		getServer().getPluginManager().registerEvents(new EntityListener(),
 				this);
